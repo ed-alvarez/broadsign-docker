@@ -1,0 +1,160 @@
+#!/bin/bash
+# Startup script for bsp
+#
+# Description: BroadSign Player startup script.
+#
+# Process name: bsp
+#
+# Copyright 2002-2011 BroadSign International Inc.
+#
+
+. /lib/lsb/init-functions
+
+RET_SUCCESS=0
+RET_GENERIC_ERROR=1
+RET_INVALID_ARGUMENTS=2
+RET_NOT_IMPLEMENTED=3
+RET_PERMISSION_DENIED=4
+RET_NOT_INSTALLED=5
+RET_NOT_CONFIGURED=6
+RET_NOT_RUNNING=7
+
+RET_STATUS_RUNNING_OK=0
+RET_STATUS_DEAD_WITH_PID=1
+RET_STATUS_DEAD_WITH_LOCK=2
+RET_STATUS_NOT_RUNNING=3
+RET_STATUS_UNKNOWN=4
+
+DAEMON_NAME="BroadSign Player"
+DAEMON="/opt/broadsign/suite/bsp/bin/bspsh"
+BSP="/opt/broadsign/suite/bsp/bin/bsp"
+DEATH_TIME=30
+user="bsp"
+
+set_display="export DISPLAY=:0"
+set_dir="cd"
+set_core="ulimit -c 0"
+qt_dir='export QTDIR=/opt/broadsign/suite/bsp/'
+set_library_path="export LD_LIBRARY_PATH=/opt/broadsign/suite/bsp/lib:$LD_LIBRARY_PATH"
+
+startcmd="$set_display; $set_library_path; $qt_dir; $set_dir; $set_core; $DAEMON"
+
+if [ ! -z ${PULSE_SERVER+x} ]; then
+	set_pulse_server='export PULSE_SERVER=""'
+	startcmd="$set_pulse_server; $set_display; $set_library_path; $qt_dir; $set_dir; $set_core; $DAEMON"
+fi
+
+usage="Usage: $0 {start|stop|restart|force-reload|status}"
+
+if [ $# -lt 1 -o "$1" = "" ] ; then
+	log_failure_msg "$0: action not specified"
+	log_warning_msg "$usage"
+	exit $RET_INVALID_ARGUMENTS
+fi
+
+if [ $# -gt 1 ] ; then
+	log_failure_msg "$0: too many arguments"
+	log_warning_msg "$usage"
+	exit $RET_INVALID_ARGUMENTS
+fi
+
+function startProc()
+{
+	sleep 1
+
+	if [ ! -e $DAEMON ]; then
+		log_failure_msg "$DAEMON not found"
+		return $RET_NOT_INSTALLED
+	fi
+
+	if [ $(id -u) -ne 0 ]; then
+		log_failure_msg "$DAEMON : Permission denied"
+		return $RET_PERMISSION_DENIED
+	fi
+
+	if [ "$(pgrep -f "$DAEMON")" != "" ]; then
+		log_warning_msg "$DAEMON_NAME is already started"
+		return $RET_SUCCESS
+	fi
+
+	su -c "$startcmd >/dev/null 2>&1 &" - $user
+
+	if [ $? -ne 0 ]; then
+		log_failure_msg "$DAEMON : Could not launch daemon"
+		return $RET_GENERIC_ERROR
+	fi
+
+	return $RET_SUCCESS
+}
+
+function stopProc()
+{
+	if [ $(id -u) -ne 0 ]; then
+		log_failure_msg "$DAEMON : Permission denied"
+		return $RET_PERMISSION_DENIED
+	fi
+
+	if [ "$(pgrep -f "$DAEMON")" == "" ]; then
+		log_warning_msg "$DAEMON_NAME is not running"
+		return $RET_SUCCESS
+	fi
+
+	start-stop-daemon --stop --exec $DAEMON
+	start-stop-daemon --stop --exec $BSP
+
+	return $RET_SUCCESS
+}
+
+function checkStatus
+{
+	local bspPid=$(pgrep -f "$DAEMON")
+	if [ "$bspPid" != "" ]; then
+		echo "$DAEMON_NAME running, process $bspPid"
+		return $RET_STATUS_RUNNING_OK
+	fi
+
+	echo "$DAEMON_NAME is not running"
+	return $RET_STATUS_NOT_RUNNING
+}
+
+test -x $DAEMON || exit $RET_PERMISSION_DENIED
+
+case "$1" in
+	start)
+		log_begin_msg "Starting $DAEMON_NAME: "
+		startProc
+		RESULT=$?
+		log_end_msg $RESULT
+		exit $RESULT
+		;;
+	stop)
+		log_begin_msg "Stopping $DAEMON_NAME"
+		stopProc
+		RESULT=$?
+		log_end_msg $RESULT
+		exit $RESULT
+		;;
+	restart | force-reload)
+		log_begin_msg "Restarting $DAEMON_NAME"
+		stopProc
+		sleep "$DEATH_TIME"
+		startProc
+		RESULT=$?
+		log_end_msg $RESULT
+		exit $RESULT
+		;;
+	status)
+		checkStatus
+		exit $?
+		;;
+	reload | try-restart)
+		exit $RET_NOT_IMPLEMENTED
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|force-reload|status}"
+		exit $RET_INVALID_ARGUMENTS
+		;;
+esac
+
+exit $RET_GENERIC_ERROR
+
