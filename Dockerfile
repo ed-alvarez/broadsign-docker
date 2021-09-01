@@ -1,7 +1,5 @@
 FROM ubuntu:latest
 
-ENV DENIAN_FONTEND noninteractive
-
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 RUN apt-get update
