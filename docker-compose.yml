@@ -1,13 +1,36 @@
 version: "3.3"
 
 services:
-  app:
-    image: x11test:latest
-    build: .
+  vidireports:
+    image: vidireports:latest
+    build:
+      context: .
+      dockerfile: vidireports.Dockerfile
+    container_name: vidireports
+    privileged: true
+    tty: true
+    volumes:
+      - /dev/video0:/dev/video0
+      - vidireports-data:/etc/vidireports
+    network_mode: host
+  broadsign-player:
+    image: broadsign-player:latest
+    build:
+      context: .
+      dockerfile: broadsign-player.Dockerfile
+    container_name: broadsign-player
+    privileged: true
     tty: true
     environment:
       - DISPLAY=${DISPLAY}
+      - XSOCK=/tmp/.X11-unix
+      - XAUTH=/tmp/.docker.xauth
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - /dev/video0:/dev/video0
+      - broadsign-player-data:/opt/broadsign
     network_mode: host
+volumes:
+  vidireports-data:
+    external: true
+  broadsign-player-data:
+    external: true

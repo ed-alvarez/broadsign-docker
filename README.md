@@ -6,16 +6,27 @@ It is extremely important to run this image using Ubuntu on Wayland only. Otherw
 
 # Usage
 
-Simply clone the repo and build the image:
+1. Clone the repo.
+2. Create the necessary volumes for the images before building:
 
 ```
-sudo docker-compose build
+$ sudo docker volume create --name=broadsign-player-data
+$ sudo docker volume create --name=vidireports-data
 ```
 
-Then, start the image with all of the required configuration by running:
+3. Build the image (If you are running this from an external process such as ansible, set `DISPLAY=:0` before running the build process). 
 
 ```
-sudo docker-compose up
+$ sudo docker-compose build
 ```
 
-That's it!
+4. Then, start the image with all of the required configuration by running:
+
+```
+$ xhost +local:docker
+$ sudo docker-compose up
+```
+
+Normally with VidiReports you'd fetch any connected cameras automatically. Since this is a container, you'll need to configure each camera feed with `v4l2:///dev/your\_device` (`your_device` being the amount of volumes mounted in the image. By default `/dev/video0`) as an "IP Camera" (See image below).
+
+![](public/example-config.png)
