@@ -1,6 +1,6 @@
 # BroadSign Player - Docker
 
-This repository holds the necessary Dockerfiles for the auto-install Ubuntu image, which holds all of the assets required in `/opt/assets/`.
+This repository holds the necessary Dockerfiles for the auto-install Ubuntu image.
 
 The required components are already included in the mentioned Ubuntu image, which are:
 
