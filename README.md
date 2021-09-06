@@ -2,7 +2,7 @@
 
 This repository holds the necessary Dockerfiles for the auto-install Ubuntu image, which holds all of the assets required in `/opt/assets/`.
 
-The required components are already built-in in the mentioned Ubuntu image, which are:
+The required components are already included in the mentioned Ubuntu image, which are:
 
 * /opt/assets/bsp
 * /opt/assets/control-player-ubuntu.deb
