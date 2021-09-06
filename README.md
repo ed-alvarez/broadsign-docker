@@ -14,7 +14,7 @@ It is extremely important to run this image using Ubuntu on Wayland only. Otherw
 
 # Usage
 
-1. Clone the repo.
+1. Clone or copy the repo inside `/opt/`.
 2. Create the necessary volumes for the images before building:
 
 ```
