@@ -35,6 +35,6 @@ $ xhost +local:docker
 $ sudo docker-compose up
 ```
 
-Normally with VidiReports you'd fetch any connected cameras automatically. Since this is a container, you'll need to configure each camera feed with `v4l2:///dev/your_device` (`your_device` being the amount of volumes mounted in the image. By default `/dev/video0`) as an "IP Camera" (See image below).
+Normally with VidiReports you'd fetch any connected cameras automatically. Since this is a container, you'll need to configure each camera feed with `v4l2:///dev/your_device` (`your_device` being the volume mounted on the Docker image. By default `/dev/video0`) as an "IP Camera" (See image below).
 
 ![](public/example-config.png)
