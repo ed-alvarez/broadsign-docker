@@ -9,6 +9,7 @@ RUN unlink /etc/localtime
 RUN ln -s /usr/share/zoneinfo/America/New_York /etc/localtime
 
 COPY assets/vidireports.sh /vidireports.sh
+COPY assets/configure_vidireports.sh /configure_vidireports.sh
 
 RUN /vidireports.sh
 
