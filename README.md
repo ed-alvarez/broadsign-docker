@@ -7,6 +7,7 @@ The required components are already included in the mentioned Ubuntu image, whic
 * /opt/assets/bsp
 * /opt/assets/control-player-ubuntu.deb
 * /opt/assets/vidireports.sh
+* /opt/assets/configure_vidireports.sh
 
 # Notes
 
