@@ -10,7 +10,7 @@ services:
     privileged: true
     tty: true
     volumes:
-      - /dev/video0:/dev/video0
+      - /dev/video*:/dev/video*
       - vidireports-data:/etc/vidireports
     network_mode: host
   broadsign-player:
