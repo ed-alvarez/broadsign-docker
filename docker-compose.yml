@@ -1,18 +1,6 @@
 version: "3.3"
 
 services:
-  vidireports:
-    image: vidireports:latest
-    build:
-      context: .
-      dockerfile: vidireports.Dockerfile
-    container_name: vidireports
-    privileged: true
-    tty: true
-    volumes:
-      - /dev/video*:/dev/video*
-      - vidireports-data:/etc/vidireports
-    network_mode: host
   broadsign-player:
     image: broadsign-player:latest
     build:
@@ -30,7 +18,5 @@ services:
       - broadsign-player-data:/opt/broadsign
     network_mode: host
 volumes:
-  vidireports-data:
-    external: true
   broadsign-player-data:
     external: true
