@@ -25,7 +25,3 @@ $ sudo docker volume create --name=broadsign-player-data
 ```
 $ sudo docker-compose build
 ```
-
-To manually configure cameras you'll need to add each device as an IP camera and use `v4l2:///dev/your_device` as the camera URI (`your_device` being the volume mounted on the Docker image) as an "IP Camera" (See image below). By default, we add all available (`/dev/video*`) devices to the container.
-
-![](public/example-config.png)
